@@ -140,6 +140,777 @@ class DynamicApi
     }
 
     /**
+     * Operation modelFilterPut
+     *
+     * Update multiple entities
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryEntityWithRelations $entity Entity Data (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterPut'] to see the possible values for this operation
+     *
+     * @throws \OpenAPI\Client\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array<string,mixed>|\OpenAPI\Client\Model\ApiErrorResponse
+     */
+    public function UpdateWhere($model, $entity, $filter, string $contentType = self::contentTypes['modelFilterPut'][0])
+    {
+        list($response) = $this->modelFilterPutWithHttpInfo($model, $entity, $filter, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation modelFilterPutWithHttpInfo
+     *
+     * Update multiple entities
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryEntityWithRelations $entity Entity Data (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterPut'] to see the possible values for this operation
+     *
+     * @throws \OpenAPI\Client\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of array<string,mixed>|\OpenAPI\Client\Model\ApiErrorResponse, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function modelFilterPutWithHttpInfo($model, $entity, $filter, string $contentType = self::contentTypes['modelFilterPut'][0])
+    {
+        $request = $this->modelFilterPutRequest($model, $entity, $filter, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch ($statusCode) {
+                case 200:
+                    if ('array<string,mixed>' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('array<string,mixed>' !== 'string') {
+                            try {
+                                $content = json_decode($content, false, 512, JSON_THROW_ON_ERROR);
+                            } catch (\JsonException $exception) {
+                                throw new ApiException(
+                                    sprintf(
+                                        'Error JSON decoding server response (%s)',
+                                        $request->getUri()
+                                    ),
+                                    $statusCode,
+                                    $response->getHeaders(),
+                                    $content
+                                );
+                            }
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'array<string,mixed>', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 400:
+                    if ('\OpenAPI\Client\Model\ApiErrorResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\OpenAPI\Client\Model\ApiErrorResponse' !== 'string') {
+                            try {
+                                $content = json_decode($content, false, 512, JSON_THROW_ON_ERROR);
+                            } catch (\JsonException $exception) {
+                                throw new ApiException(
+                                    sprintf(
+                                        'Error JSON decoding server response (%s)',
+                                        $request->getUri()
+                                    ),
+                                    $statusCode,
+                                    $response->getHeaders(),
+                                    $content
+                                );
+                            }
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\OpenAPI\Client\Model\ApiErrorResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            $returnType = 'array<string,mixed>';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    try {
+                        $content = json_decode($content, false, 512, JSON_THROW_ON_ERROR);
+                    } catch (\JsonException $exception) {
+                        throw new ApiException(
+                            sprintf(
+                                'Error JSON decoding server response (%s)',
+                                $request->getUri()
+                            ),
+                            $statusCode,
+                            $response->getHeaders(),
+                            $content
+                        );
+                    }
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'array<string,mixed>',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\OpenAPI\Client\Model\ApiErrorResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation modelFilterPutAsync
+     *
+     * Update multiple entities
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryEntityWithRelations $entity Entity Data (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterPut'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function modelFilterPutAsync($model, $entity, $filter, string $contentType = self::contentTypes['modelFilterPut'][0])
+    {
+        return $this->modelFilterPutAsyncWithHttpInfo($model, $entity, $filter, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation modelFilterPutAsyncWithHttpInfo
+     *
+     * Update multiple entities
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryEntityWithRelations $entity Entity Data (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterPut'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function modelFilterPutAsyncWithHttpInfo($model, $entity, $filter, string $contentType = self::contentTypes['modelFilterPut'][0])
+    {
+        $returnType = 'array<string,mixed>';
+        $request = $this->modelFilterPutRequest($model, $entity, $filter, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'modelFilterPut'
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryEntityWithRelations $entity Entity Data (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterPut'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function modelFilterPutRequest($model, $entity, $filter, string $contentType = self::contentTypes['modelFilterPut'][0])
+    {
+
+        // verify the required parameter 'model' is set
+        if ($model === null || (is_array($model) && count($model) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $model when calling modelFilterPut'
+            );
+        }
+
+        // verify the required parameter 'entity' is set
+        if ($entity === null || (is_array($entity) && count($entity) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $entity when calling modelFilterPut'
+            );
+        }
+
+        if ($filter === null || (is_array($filter) && count($filter) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $filter when calling modelFilterPut'
+            );
+        }
+
+
+        $resourcePath = '/{model}/filter';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($model !== null) {
+            $resourcePath = str_replace(
+                '{' . 'model' . '}',
+                ObjectSerializer::toPathValue($model),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json',],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($entity)) {
+            $httpBody = [
+                "MainEntity" => $entity['main_entity'],
+                "Relations" => $entity['relations'],
+                "expressions" => $filter['expressions']
+            ];
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($httpBody));
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'PUT',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation modelFilterDelete
+     *
+     * Delete multiple entities
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterDelete'] to see the possible values for this operation
+     *
+     * @throws \OpenAPI\Client\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array<string,mixed>|\OpenAPI\Client\Model\ApiErrorResponse|\OpenAPI\Client\Model\ApiErrorResponse
+     */
+    public function DeleteWhere($model, $filter, string $contentType = self::contentTypes['modelFilterDelete'][0])
+    {
+        list($response) = $this->modelFilterDeleteWithHttpInfo($model, $filter, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation modelFilterDeleteWithHttpInfo
+     *
+     * Delete multiple entities
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterDelete'] to see the possible values for this operation
+     *
+     * @throws \OpenAPI\Client\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return array of array<string,mixed>|\OpenAPI\Client\Model\ApiErrorResponse|\OpenAPI\Client\Model\ApiErrorResponse, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function modelFilterDeleteWithHttpInfo($model, $filter, string $contentType = self::contentTypes['modelFilterDelete'][0])
+    {
+        $request = $this->modelFilterDeleteRequest($model, $filter, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+
+            switch ($statusCode) {
+                case 200:
+                    if ('array<string,mixed>' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('array<string,mixed>' !== 'string') {
+                            try {
+                                $content = json_decode($content, false, 512, JSON_THROW_ON_ERROR);
+                            } catch (\JsonException $exception) {
+                                throw new ApiException(
+                                    sprintf(
+                                        'Error JSON decoding server response (%s)',
+                                        $request->getUri()
+                                    ),
+                                    $statusCode,
+                                    $response->getHeaders(),
+                                    $content
+                                );
+                            }
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'array<string,mixed>', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 400:
+                    if ('\OpenAPI\Client\Model\ApiErrorResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\OpenAPI\Client\Model\ApiErrorResponse' !== 'string') {
+                            try {
+                                $content = json_decode($content, false, 512, JSON_THROW_ON_ERROR);
+                            } catch (\JsonException $exception) {
+                                throw new ApiException(
+                                    sprintf(
+                                        'Error JSON decoding server response (%s)',
+                                        $request->getUri()
+                                    ),
+                                    $statusCode,
+                                    $response->getHeaders(),
+                                    $content
+                                );
+                            }
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\OpenAPI\Client\Model\ApiErrorResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                case 500:
+                    if ('\OpenAPI\Client\Model\ApiErrorResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\OpenAPI\Client\Model\ApiErrorResponse' !== 'string') {
+                            try {
+                                $content = json_decode($content, false, 512, JSON_THROW_ON_ERROR);
+                            } catch (\JsonException $exception) {
+                                throw new ApiException(
+                                    sprintf(
+                                        'Error JSON decoding server response (%s)',
+                                        $request->getUri()
+                                    ),
+                                    $statusCode,
+                                    $response->getHeaders(),
+                                    $content
+                                );
+                            }
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\OpenAPI\Client\Model\ApiErrorResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            $returnType = 'array<string,mixed>';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    try {
+                        $content = json_decode($content, false, 512, JSON_THROW_ON_ERROR);
+                    } catch (\JsonException $exception) {
+                        throw new ApiException(
+                            sprintf(
+                                'Error JSON decoding server response (%s)',
+                                $request->getUri()
+                            ),
+                            $statusCode,
+                            $response->getHeaders(),
+                            $content
+                        );
+                    }
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'array<string,mixed>',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 400:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\OpenAPI\Client\Model\ApiErrorResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                case 500:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\OpenAPI\Client\Model\ApiErrorResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation modelFilterDeleteAsync
+     *
+     * Delete multiple entities
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterDelete'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function modelFilterDeleteAsync($model, $filter, string $contentType = self::contentTypes['modelFilterDelete'][0])
+    {
+        return $this->modelFilterDeleteAsyncWithHttpInfo($model, $filter, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation modelFilterDeleteAsyncWithHttpInfo
+     *
+     * Delete multiple entities
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterDelete'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function modelFilterDeleteAsyncWithHttpInfo($model, $filter, string $contentType = self::contentTypes['modelFilterDelete'][0])
+    {
+        $returnType = 'array<string,mixed>';
+        $request = $this->modelFilterDeleteRequest($model, $filter, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'modelFilterDelete'
+     *
+     * @param  string $model Model Name (required)
+     * @param  \OpenAPI\Client\Model\QueryQueryFilter $filter Filter conditions (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['modelFilterDelete'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function modelFilterDeleteRequest($model, $filter, string $contentType = self::contentTypes['modelFilterDelete'][0])
+    {
+
+        // verify the required parameter 'model' is set
+        if ($model === null || (is_array($model) && count($model) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $model when calling modelFilterDelete'
+            );
+        }
+
+        // verify the required parameter 'filter' is set
+        if ($filter === null || (is_array($filter) && count($filter) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $filter when calling modelFilterDelete'
+            );
+        }
+
+
+        $resourcePath = '/{model}/filter';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($model !== null) {
+            $resourcePath = str_replace(
+                '{' . 'model' . '}',
+                ObjectSerializer::toPathValue($model),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json',],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($filter)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($filter));
+            } else {
+                $httpBody = $filter;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'DELETE',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+
+
+    /**
      * Operation modelFilterPost
      *
      * Filter entities
