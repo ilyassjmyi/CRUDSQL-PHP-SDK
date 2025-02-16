@@ -40,6 +40,10 @@ use OpenAPI\Client\ApiException;
 use OpenAPI\Client\Configuration;
 use OpenAPI\Client\HeaderSelector;
 use OpenAPI\Client\ObjectSerializer;
+use Ratchet\Client\WebSocket;
+use Ratchet\Client\Connector;
+use React\EventLoop\Factory;
+use React\Socket\Connector as ReactConnector;
 
 /**
  * DynamicApi Class Doc Comment
@@ -138,6 +142,48 @@ class DynamicApi
     {
         return $this->config;
     }
+
+
+
+    /**
+     * Listen to WebSocket events
+     *
+     * @param string $model Model name
+     * @param string $event Event type (created, updated, deleted)
+     * @param callable $callback Callback function with parameters: event, model, data
+     */
+    public function listen($model, $event, callable $callback)
+    {
+        $loop = Factory::create();
+        $reactConnector = new ReactConnector($loop, [
+            'timeout' => 10,
+            'dns' => '8.8.8.8',
+        ]);
+        $connector = new Connector($loop, $reactConnector);
+
+        $url = preg_replace('/^http(s)?:\/\//', 'ws$1://', $this->config->getHost()) . "/ws/{$model}/{$event}";
+        $accessToken = $this->config->getAccessToken();
+
+        $connector($url, [], ['Authorization' => "Bearer {$accessToken}"])
+            ->then(function (WebSocket $conn) use ($callback) {
+                $conn->on('message', function ($msg) use ($callback) {
+                    $data = json_decode($msg, true);
+                    if (isset($data['event'], $data['model'], $data['data'])) {
+                        $callback($data['event'], $data['model'], $data['data']);
+                    }
+                });
+
+                $conn->on('close', function ($code = null, $reason = null) {
+                    echo "Connection closed ({$code} - {$reason})\n";
+                });
+            }, function ($e) use ($loop) {
+                echo "Could not connect: {$e->getMessage()}\n";
+                $loop->stop();
+            });
+
+        $loop->run();
+    }
+
 
     /**
      * Operation modelFilterPut
